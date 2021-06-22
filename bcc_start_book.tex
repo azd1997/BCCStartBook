@@ -1,0 +1,58 @@
+\documentclass[cn,11pt,chinese,twocol]{elegantbook}
+
+% 书籍信息
+\input{body/bookinfo.tex}
+
+% 使用的包
+\input{body/packages.tex}
+
+\begin{document}
+
+% 编译封面
+\maketitle
+\frontmatter
+
+% 前言
+\input{body/preface.tex}
+
+% 目录
+\tableofcontents
+
+% 修订历史
+\listofchanges
+
+\mainmatter
+
+
+% 第一章：区块链基础
+\input{body/chap1-blockchain-basics.tex}
+
+% 第二章：共识协议基础
+\input{body/chap2-consensus-basics.tex}
+
+% 第三章：Go语言基础
+\input{body/chap3-golang-basics.tex}
+
+% 第四章：一个简单的区块链
+\input{body/chap4-simple-blockchain.tex}
+
+% 第五章：bcc库框架
+\input{body/chap5-bcc-frame.tex}
+
+% 第六章：PoT协议
+\input{body/chap6-pot.tex}
+
+% 第七章：bcc库的完善与测试
+\input{body/chap7-bcc-update.tex}
+
+% 第八章：简单的kv应用
+\input{body/chap8-bcc-simple-kv-app.tex}
+
+% 第九章：安全数据共享
+\input{body/chap9-data-share-app.tex}
+
+% 参考文献
+\input{body/references.tex}
+
+
+\end{document}
