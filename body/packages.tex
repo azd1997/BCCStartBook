@@ -4,28 +4,44 @@
 % 添加浮动环境
 \usepackage{float}
 
+% 使用颜色包
+%\usepackage[dvipsnames]{xcolor}
+
 % 用于添加代码的设置。
 \usepackage{listings}
 %\usepackage{ctex}
 % 用来设置代码的样式
 \lstset{
-    basicstyle          =   \sffamily,          % 基本代码风格
-    keywordstyle        =   \bfseries,          % 关键字风格
+    basicstyle          =   \sffamily,          % 基本代码风格 % \ttfamily等
+    breaklines=true, % 自动换行
+    %keywordstyle        =   \bfseries,          % 关键字风格
+    keywordstyle        =   {\bfseries\color{NavyBlue}},
+    emphstyle={\bfseries\color{Rhodamine}}, %强调部分的风格
+    alsoletter={.}, %把.也看做字母，这样在完整字符串匹配时有用         
     commentstyle        =   \rmfamily\itshape,  % 注释的风格，斜体
-    stringstyle         =   \ttfamily,  % 字符串风格
+    stringstyle         =   \rmfamily,  % 字符串风格
     flexiblecolumns,                % 别问为什么，加上这个
     numbers             =   left,   % 行号的位置在左边
+    %numbersep=2em,
     showspaces          =   false,  % 是否显示空格，显示了有点乱，所以不现实了
-    numberstyle         =   \zihao{-5}\ttfamily,    % 行号的样式，小五号，tt等宽字体
+    numberstyle         =   \zihao{-6}\ttfamily,    % 行号的样式，小六号，tt等宽字体
     showstringspaces    =   false,
     captionpos          =   tl,      % 这段代码的名字所呈现的位置，t指的是top上面
-    frame               =   tb,   % 显示边框 %lrtb左右顶底
-    framexleftmargin     =   7mm,  % 代码边框向左延伸5mm，以包含行号
+    %frame               =   tb,   % 显示边框 %lrtb左右顶底
+    frame = shadowbox, %框为阴影盒子样式 
+    backgroundcolor={\color{yellow!20!white}},%背景颜色
+    rulecolor = {\color{purple}},%边框颜色
+    rulesepcolor = {\color{orange}},%shadowbox右边和下边的偏移部分的颜色
+    rulesep=6pt,%边框偏移量
+    %framexleftmargin     =   7mm,  % 代码边框向左延伸5mm，以包含行号
+    xleftmargin=2em,xrightmargin=2em,aboveskip=1em,    % 设置左/右/上间距
+    %escapeinside=``, %逃逸字符。用双`符号包裹的字符串可以直接输出。最直接的用途是用来在代码中添加中文（listings默认不支持中文）
 }
+
 \lstdefinestyle{Go}{
     language        =   Go, % 语言选Go
     basicstyle      =   \zihao{-5}\ttfamily,
-    numberstyle     =   \zihao{-5}\ttfamily,
+    numberstyle     =   \zihao{-6}\ttfamily,
     keywordstyle    =   \color{blue},
     keywordstyle    =   [2] \color{teal},
     stringstyle     =   \color{magenta},

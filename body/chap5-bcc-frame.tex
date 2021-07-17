@@ -1,6 +1,6 @@
 \chapter{bcc库框架}
 
-\section{导读}
+\section{本章导读}
 
 前面我们介绍了区块链与共识协议的基础，也简单介绍了阅读本文所需的Go语言基础，并且带领读者编写了一个简单的区块链程序，相信读者已经对区块链底层开发有一定的认识和了解。我们本书的目的是实现一个自己的共识协议，这要求我们编写一个通用的、模块可替换的区块链程序，从而对提出的共识协议进行测试、实验。为了方便起见，我们称这样的程序为bcc库（blockchain-consensus library），基于bcc库，可以快速建立自己的。本章我们将介绍bcc库的设计与实现。
 
@@ -42,42 +42,170 @@
 \end{enumerate}
 
 
-\section{数据结构}
+\section{通用账户结构设计}
+
+\section{基础数据结构——节点信息、交易、区块与消息}
+
+在bcc库中，基础的数据结构指账户唯一标识（ID）、节点信息（PeerInfo）、 交易（Transaction）、区块（Block）、消息（Message）。下面对其一一介绍。
 
 \subsection{账户ID}
 
+我们已经知道，区块链中使用数字签名算法生成密钥对作为帐号，但是为了方便记忆与使用，通常会对密钥对中的公钥进行编码，得到一串较短的、可反编码为公钥的字符串，并以此为账户ID。在bcc库中，我们不太关心一个ID是如何生成的（也即采用了何种数字签名算法、经过了怎样的编码过程）。我们仅使用字符串作为ID的类型。但要注意的是，我们需要为其添加一些约定，例如：ID具备签名与验证签名的能力
+
+\begin{lstlisting}[float,style=Go,caption=xxx]
+	put your code here!
+\end{lstlisting}	
+
 \subsection{节点信息}
+
+节点信息
+
+
+xxx
+
+\begin{lstlisting}[float,style=Go,caption=xxx]
+	put your code here!
+\end{lstlisting}
 
 \subsection{交易}
 
+\begin{lstlisting}[float,style=Go,caption=xxx]
+	put your code here!
+\end{lstlisting}
+
 \subsection{区块}
+
+\begin{lstlisting}[float,style=Go,caption=xxx]
+	put your code here!
+\end{lstlisting}
 
 \subsection{消息}
 
-\section{网络模块}
+\begin{lstlisting}[float,style=Go,caption=xxx]
+	put your code here!
+\end{lstlisting}
+
+\section{网络模块的接口定义与实现}
 
 \subsection{BNet接口}
 
+\begin{lstlisting}[float,style=Go,caption=xxx]
+	put your code here!
+\end{lstlisting}
+
 \subsection{TCPNet实现}
+
+\begin{lstlisting}[float,style=Go,caption=xxx]
+	put your code here!
+\end{lstlisting}
 
 \subsection{UDPNet实现}
 
-\section{节点表模块}
+\begin{lstlisting}[float,style=Go,caption=xxx]
+	put your code here!
+\end{lstlisting}
+
+\section{节点表模块的接口定义与实现}
 
 \subsection{Pit接口}
 
+\begin{lstlisting}[float,style=Go,caption=xxx]
+	put your code here!
+\end{lstlisting}
+
 \subsection{SimplePit实现}
 
-\section{账本模块}
+\begin{lstlisting}[float,style=Go,caption=xxx]
+	put your code here!
+\end{lstlisting}
+
+\section{账本模块的接口定义与实现}
 
 \subsection{Ledger接口}
 
+代码\ref{ledger}
+
+\begin{lstlisting}[float,style=Go,caption=modules/ledger/ledger.go,label=ledger]
+	type LedgerType uint8
+
+	const (
+		LedgerType_SimpleChain LedgerType = iota
+	)
+
+	// New
+	func New(ledgertype LedgerType, id string) (requires.BlockChain, error) {
+		switch ledgertype {
+		case LedgerType_SimpleChain:
+			return simplechain.New(id)
+		default:
+			return nil, errors.New("unsupport ledger type")
+		}
+	}
+
+	// Ledger 账本。比如区块链账本
+	type Ledger interface {
+		requires.BlockChain
+	}
+\end{lstlisting}
+
 \subsection{SimpleChain实现}
 
-\section{共识模块}
+\begin{lstlisting}[float,style=Go,caption=modules/ledger/simplechain/simplechain.go]
+xxx
+\end{lstlisting}
+
+\section{共识模块的接口定义}
 
 \subsection{Consensus接口}
 
-\section{小结}
+\begin{lstlisting}[float,caption=modules/consensus/css.go,style=Go]
+	type ConsensusType uint8
+
+	const (
+		ConsensuType_PoT ConsensusType = iota
+		ConsensuType_PoW
+		ConsensuType_PBFT
+		ConsensuType_Raft
+	)
+	
+	// Consensus 共识接口。事实上一个Consensus实例代表一个基于该共识协议的共识节点
+	type Consensus interface {
+		Init() error  // Init 初始化(运行)。 New之后需要Init
+		Inited() bool // Inited 判断是否初始化好
+		Ok() bool     // Ok 检查Net所依赖的对象是否初始化好
+		Close() error // Close 关闭状态机服务，执行一些必要的清理工作
+		Closed() bool
+	
+		/*不可调用，只是为了约束Consensus该有的实现*/
+	
+		// HandleMsg [不可调用] 共识节点必需有处理各类消息的能力
+		HandleMsg(msg *defines.Message) error
+		// StateMachineLoop [不可调用] 状态机循环，负责状态的切换 go
+		StateMachineLoop()
+		// MsgHandleLoop [不可调用] 消息处理循环 go
+		MsgHandleLoop()
+		// SetMsgInChan [不建议调用] 设置接收消息的channel，需要将该chan移交给网络模块去写消息
+		// Consensus模块在内部循环读该chan，处理Message
+		SetMsgInChan(bus chan *defines.Message)
+	}
+	
+	// New 新建一个共识状态机
+	func New(typ ConsensusType,
+		id string, duty defines.PeerDuty,
+		pit pitable.Pit, bc requires.BlockChain,
+		net bnet.BNet, msgchan chan *defines.Message,
+		monitorId, monitorHost string,
+		genesisData ...string) (Consensus, error) {
+	
+		switch typ {
+		case ConsensuType_PoT:
+			return pot.New(id, duty, pit, bc, net, msgchan, monitorId, monitorHost, genesisData...)
+		default:
+			return nil, errors.New("unknown consensus type")
+		}
+	}
+\end{lstlisting}
+
+\section{本章小结}
 
 本章
